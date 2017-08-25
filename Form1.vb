@@ -1,15 +1,21 @@
 ﻿Public Class form1
     Dim n(5), a(5), b(5), c(5), d(5), ans As Integer
-    Dim ifop(3) As String
+    Dim ifop(6) As String
     Dim AnsList As New List(Of Integer)
-    Dim op(5) As String
-    Dim typeTitle() As String = {"", "單層迴圈", "雙層迴圈", "三層迴圈", "迴圈+if", "迴圈+if...else", "if"}
+    Dim op(5), selectStr(5), selectOp(5) As String
+    Dim typeTitle() As String = {"", "單層迴圈", "雙層迴圈", "三層迴圈", "迴圈+if", "迴圈+if...else", "if", "if...else", "if...elseif",
+                                 "if if...else", "select"}
     Dim bool(4), topicTypeRecord(26) As Boolean
     Dim record(2), type(26), errorRecord(26) As Integer
     Private Sub Form1_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
         Array.Clear(type, 0, type.Count)
         Array.Clear(errorRecord, 0, errorRecord.Count)
-        topicTypeRecord(1) = True : caseFor1()
+        selectStr(0) = "於麗傳者紅？頭升什式印品成積館去制在保是；動操一西的分目健情票看校其物手以，兒到主；不友產兒分人千男一什發底到香的直幾，個為教的大況皮車的廣積親理神作，區吸部雜電車記農期投心覺緊海腦！上只國起法的。語歡然非孩問成物自入課們公食鄉，國斷下。親起們日行是議著者此必前就，花是適然者立歌親接的展洋；教經意信賽大下相建物臺自告者麼問通里們晚推會特代要興分一一家子，口葉新媽不單火的反系關的。他公家臺小時用運的可動形著，中發十是……東物人一都中訴走，生錢是難裡長同有是度光讓環望來到醫理戰親得；奇務一花青信己們形明。然立的意聲……化了內病那育非如不而氣來女的只工電對水今動。來念細工笑！民商比中樹相在立列十散當老山新點微？不難能運了己者統親生位人，小住職有的生主總聲開復！色總路。樣國這活市文院有師山進參子當平銀證，同管發你物便布能！知對數理資可第點費。"
+        For i = 1 To 20
+            Dim rand As Integer = Int(Rnd() * 26)
+            selectStr(1) &= Chr(If(Int(Rnd() * 2) = 0, 65, 97) + rand)
+        Next
+        Caseto()
     End Sub
     Sub init()
         Randomize()
@@ -24,10 +30,11 @@
         For i = 1 To 5
             n(i) = Int(Rnd() * 100)
             a(i) = Int(Rnd() * 20 - 10)
-            b(i) = a(1) + Int(Rnd() * 10 + 10)
+            b(i) = a(i) + Int(Rnd() * 10 + 10)
             c(i) = Int(Rnd() * 5 + 1)
             d(i) = Int(Rnd() * 5 + 1)
             op(i) = Choose(Int(Rnd() * 5 + 1), "+", "-", "*", "/", "%")
+            selectOp(i) = Choose(Int(Rnd() * 5 + 1), ">", ">=", "=", "<=", "<")
             While op(i) = "*" And n(i) = 0
                 n(i) += Int(Rnd() * 100)
             End While
@@ -38,12 +45,16 @@
         ifop(1) = Choose(Int(Rnd() * 2 + 1), "x", "i")
         ifop(2) = Choose(Int(Rnd() * 5 + 1), ">", ">=", "=", "<=", "<")
         ifop(3) = Choose(Int(Rnd() * 4 + 1), If(ifop(1) = "x", "i", "x"), c(1), b(1), n(1))
+        ifop(4) = Choose(Int(Rnd() * 2 + 1), "x", "i")
+        ifop(5) = Choose(Int(Rnd() * 5 + 1), ">", ">=", "=", "<=", "<")
+        ifop(6) = Choose(Int(Rnd() * 4 + 1), If(ifop(4) = "x", "i", "x"), c(2), b(2), n(2))
         chooseButton1.Enabled = False
         chooseButton2.Enabled = False
         chooseButton3.Enabled = False
         chooseButton4.Enabled = False
         Array.Clear(bool, 0, bool.Count)
     End Sub
+#Region "for"
     Sub caseFor1()
         init()
         TitleLabel.Text &= "x=" & n(1) & vbNewLine
@@ -134,6 +145,8 @@
         End Try
         buttonToAns()
     End Sub
+#End Region
+#Region "for+if"
     Sub caseFor_If()
         init()
         TitleLabel.Text &= "x=" & n(1) & vbNewLine
@@ -246,6 +259,8 @@ addList:
         End While
         buttonToAns()
     End Sub
+#End Region
+#Region "IfElse"
     Sub caseIf()
         init()
         TitleLabel.Text &= "x=" & n(1) & ": i=" & a(2) & vbNewLine
@@ -280,6 +295,7 @@ addList:
                     temp = temp Mod d(1)
             End Select
 pro:
+
             AnsList.Add(temp)
         Catch ex As Exception
             Caseto() : Return
@@ -293,6 +309,539 @@ pro:
         End While
         buttonToAns()
     End Sub
+    Sub caseIf_Else()
+        init()
+        TitleLabel.Text &= "x=" & n(1) & ": i=" & a(2) & vbNewLine
+        TitleLabel.Text &= "if " & ifop(1) & ifop(2) & ifop(3) & vbNewLine
+        TitleLabel.Text &= "　　x" & op(1) & "=" & d(1) & vbNewLine & "Else" & vbNewLine
+        TitleLabel.Text &= "　　x" & op(2) & "=" & d(2) & vbNewLine & "End If" & vbNewLine
+        TitleLabel.Text &= vbNewLine & "x=?"
+        Dim temp As Integer = n(1)
+        Dim i As Integer = a(2)
+        Try
+            Select Case ifop(2)
+                Case ">"
+                    If If(ifop(1) = "x", temp, i) > If(ifop(3) = "x", temp, If(ifop(3) = "i", i, ifop(3))) Then GoTo caseop1
+                Case ">="
+                    If If(ifop(1) = "x", temp, i) >= If(ifop(3) = "x", temp, If(ifop(3) = "i", i, ifop(3))) Then GoTo caseop1
+                Case "="
+                    If If(ifop(1) = "x", temp, i) = If(ifop(3) = "x", temp, If(ifop(3) = "i", i, ifop(3))) Then GoTo caseop1
+                Case "<"
+                    If If(ifop(1) = "x", temp, i) < If(ifop(3) = "x", temp, If(ifop(3) = "i", i, ifop(3))) Then GoTo caseop1
+                Case "<="
+                    If If(ifop(1) = "x", temp, i) <= If(ifop(3) = "x", temp, If(ifop(3) = "i", i, ifop(3))) Then GoTo caseop1
+            End Select
+            Select Case op(2)
+                Case "+"
+                    temp += d(2)
+                Case "-"
+                    temp -= d(2)
+                Case "*"
+                    temp *= d(2)
+                Case "/"
+                    temp /= d(2)
+                Case "%"
+                    temp = temp Mod d(2)
+            End Select
+            GoTo addList
+caseop1:
+            Select Case op(1)
+                Case "+"
+                    temp += d(1)
+                Case "-"
+                    temp -= d(1)
+                Case "*"
+                    temp *= d(1)
+                Case "/"
+                    temp /= d(1)
+                Case "%"
+                    temp = temp Mod d(1)
+            End Select
+addList:
+            AnsList.Add(temp)
+        Catch ex As Exception
+            Caseto() : Return
+        End Try
+        If AnsList.Count = 0 Then caseFor_If() : Return
+        ans = AnsList.Last
+        While AnsList.Distinct.ToList.Count < 4
+            Dim rand As Integer = Rnd() * 10 - 5
+            Dim index As Integer = Int(Rnd() * AnsList.Count)
+            AnsList.Add(AnsList(index) + rand)
+        End While
+        buttonToAns()
+    End Sub
+    Sub caseIf_ElseIf()
+        init()
+        TitleLabel.Text &= "x=" & n(1) & ": i=" & a(2) & vbNewLine
+        TitleLabel.Text &= "if " & ifop(1) & ifop(2) & ifop(3) & vbNewLine
+        TitleLabel.Text &= "　　x" & op(1) & "=" & d(1) & vbNewLine & "ElseIf " & ifop(4) & ifop(5) & ifop(6) & vbNewLine
+        TitleLabel.Text &= "　　x" & op(2) & "=" & d(2) & vbNewLine & "End If" & vbNewLine
+        TitleLabel.Text &= vbNewLine & "x=?"
+        Dim temp As Integer = n(1)
+        Dim i As Integer = a(2)
+        Try
+            Select Case ifop(2)
+                Case ">"
+                    If If(ifop(1) = "x", temp, i) > If(ifop(3) = "x", temp, If(ifop(3) = "i", i, ifop(3))) Then GoTo caseop1
+                Case ">="
+                    If If(ifop(1) = "x", temp, i) >= If(ifop(3) = "x", temp, If(ifop(3) = "i", i, ifop(3))) Then GoTo caseop1
+                Case "="
+                    If If(ifop(1) = "x", temp, i) = If(ifop(3) = "x", temp, If(ifop(3) = "i", i, ifop(3))) Then GoTo caseop1
+                Case "<"
+                    If If(ifop(1) = "x", temp, i) < If(ifop(3) = "x", temp, If(ifop(3) = "i", i, ifop(3))) Then GoTo caseop1
+                Case "<="
+                    If If(ifop(1) = "x", temp, i) <= If(ifop(3) = "x", temp, If(ifop(3) = "i", i, ifop(3))) Then GoTo caseop1
+            End Select
+            Select Case ifop(5)
+                Case ">"
+                    If If(ifop(4) = "x", temp, i) > If(ifop(6) = "x", temp, If(ifop(6) = "i", i, ifop(6))) Then  Else GoTo addList
+                Case ">="
+                    If If(ifop(4) = "x", temp, i) >= If(ifop(6) = "x", temp, If(ifop(6) = "i", i, ifop(6))) Then  Else GoTo addList
+                Case "="
+                    If If(ifop(4) = "x", temp, i) = If(ifop(6) = "x", temp, If(ifop(6) = "i", i, ifop(6))) Then  Else GoTo addList
+                Case "<"
+                    If If(ifop(4) = "x", temp, i) < If(ifop(6) = "x", temp, If(ifop(6) = "i", i, ifop(6))) Then  Else GoTo addList
+                Case "<="
+                    If If(ifop(4) = "x", temp, i) <= If(ifop(6) = "x", temp, If(ifop(6) = "i", i, ifop(6))) Then  Else GoTo addList
+            End Select
+            Select Case op(2)
+                Case "+"
+                    temp += d(2)
+                Case "-"
+                    temp -= d(2)
+                Case "*"
+                    temp *= d(2)
+                Case "/"
+                    temp /= d(2)
+                Case "%"
+                    temp = temp Mod d(2)
+            End Select
+            GoTo addList
+caseop1:
+            Select Case op(1)
+                Case "+"
+                    temp += d(1)
+                Case "-"
+                    temp -= d(1)
+                Case "*"
+                    temp *= d(1)
+                Case "/"
+                    temp /= d(1)
+                Case "%"
+                    temp = temp Mod d(1)
+            End Select
+addList:
+            AnsList.Add(temp)
+        Catch ex As Exception
+            Caseto() : Return
+        End Try
+        If AnsList.Count = 0 Then caseFor_If() : Return
+        ans = AnsList.Last
+        While AnsList.Distinct.ToList.Count < 4
+            Dim rand As Integer = Rnd() * 10 - 5
+            Dim index As Integer = Int(Rnd() * AnsList.Count)
+            AnsList.Add(AnsList(index) + rand)
+        End While
+        buttonToAns()
+    End Sub
+    Sub caseIf_If_Else()
+        init()
+        TitleLabel.Text &= "x=" & n(1) & ": i=" & a(2) & vbNewLine
+        TitleLabel.Text &= "if " & ifop(4) & ifop(5) & ifop(6) & vbNewLine
+        TitleLabel.Text &= "　　if " & ifop(1) & ifop(2) & ifop(3) & vbNewLine
+        TitleLabel.Text &= "　　　　x" & op(1) & "=" & d(1) & vbNewLine & "　　Else" & vbNewLine
+        TitleLabel.Text &= "　　　　x" & op(2) & "=" & d(2) & vbNewLine & "　　End If" & vbNewLine & "End If" & vbNewLine
+        TitleLabel.Text &= vbNewLine & "x=?"
+        Dim temp As Integer = n(1)
+        Dim i As Integer = a(2)
+        Try
+            Select Case ifop(5)
+                Case ">"
+                    If If(ifop(4) = "x", temp, i) > If(ifop(6) = "x", temp, If(ifop(6) = "i", i, ifop(6))) Then  Else GoTo addList
+                Case ">="
+                    If If(ifop(4) = "x", temp, i) >= If(ifop(6) = "x", temp, If(ifop(6) = "i", i, ifop(6))) Then  Else GoTo addList
+                Case "="
+                    If If(ifop(4) = "x", temp, i) = If(ifop(6) = "x", temp, If(ifop(6) = "i", i, ifop(6))) Then  Else GoTo addList
+                Case "<"
+                    If If(ifop(4) = "x", temp, i) < If(ifop(6) = "x", temp, If(ifop(6) = "i", i, ifop(6))) Then  Else GoTo addList
+                Case "<="
+                    If If(ifop(4) = "x", temp, i) <= If(ifop(6) = "x", temp, If(ifop(6) = "i", i, ifop(6))) Then  Else GoTo addList
+            End Select
+            Select Case ifop(2)
+                Case ">"
+                    If If(ifop(1) = "x", temp, i) > If(ifop(3) = "x", temp, If(ifop(3) = "i", i, ifop(3))) Then GoTo caseop1
+                Case ">="
+                    If If(ifop(1) = "x", temp, i) >= If(ifop(3) = "x", temp, If(ifop(3) = "i", i, ifop(3))) Then GoTo caseop1
+                Case "="
+                    If If(ifop(1) = "x", temp, i) = If(ifop(3) = "x", temp, If(ifop(3) = "i", i, ifop(3))) Then GoTo caseop1
+                Case "<"
+                    If If(ifop(1) = "x", temp, i) < If(ifop(3) = "x", temp, If(ifop(3) = "i", i, ifop(3))) Then GoTo caseop1
+                Case "<="
+                    If If(ifop(1) = "x", temp, i) <= If(ifop(3) = "x", temp, If(ifop(3) = "i", i, ifop(3))) Then GoTo caseop1
+            End Select
+            Select Case op(2)
+                Case "+"
+                    temp += d(2)
+                Case "-"
+                    temp -= d(2)
+                Case "*"
+                    temp *= d(2)
+                Case "/"
+                    temp /= d(2)
+                Case "%"
+                    temp = temp Mod d(2)
+            End Select
+            GoTo addList
+caseop1:
+            Select Case op(1)
+                Case "+"
+                    temp += d(1)
+                Case "-"
+                    temp -= d(1)
+                Case "*"
+                    temp *= d(1)
+                Case "/"
+                    temp /= d(1)
+                Case "%"
+                    temp = temp Mod d(1)
+            End Select
+addList:
+            AnsList.Add(temp)
+        Catch ex As Exception
+            Caseto() : Return
+        End Try
+        If AnsList.Count = 0 Then caseFor_If() : Return
+        ans = AnsList.Last
+        While AnsList.Distinct.ToList.Count < 4
+            Dim rand As Integer = Rnd() * 10 - 5
+            Dim index As Integer = Int(Rnd() * AnsList.Count)
+            AnsList.Add(AnsList(index) + rand)
+        End While
+        buttonToAns()
+    End Sub
+#End Region
+#Region "select"
+    Sub caseSelect()
+        init()
+        Dim tempStr As String = ""
+        Dim tempRand As Integer = Int(Rnd() * 2)
+        Dim strType As Integer = tempRand
+        Dim recordTemp As New List(Of List(Of String)) '1=To , 2=Is ,3=>=< ,4=Else
+        recordTemp.Add(New List(Of String))
+        For j = 1 To Int(Rnd() * 10 + 1)
+            tempStr &= Mid(selectStr(tempRand), Int(Rnd() * selectStr(tempRand).Length + 1), 1)
+        Next
+        TitleLabel.Text &= "x=" & n(1) & " : str=" & Chr(34) & tempStr & Chr(34) & vbNewLine
+        tempRand = Int(Rnd() * 3 + 1)
+        Dim temp As Integer = n(1)
+        Try
+            Select Case tempRand
+                Case 1
+                    TitleLabel.Text &= "select case str.Length" & vbNewLine
+                    tempRand = Int(Rnd() * 2 + 2)
+                    For i = 1 To tempRand
+                        recordTemp.Add({Int(Rnd() * 3 + 1).ToString}.ToList)
+                        If i = tempRand And Int(Rnd() * 2) = 0 Then
+                            recordTemp(i)(0) = 4
+                            TitleLabel.Text &= "Case Else" & vbNewLine
+                        Else
+                            If recordTemp(i)(0) = 1 Then
+                                TitleLabel.Text &= "Case " & c(i) & " To " & d(i) & vbNewLine
+                                recordTemp(i).Add(c(i))
+                                recordTemp(i).Add(d(i))
+                            ElseIf recordTemp(i)(0) = 2 Then
+                                TitleLabel.Text &= "Case " & c(i) & vbNewLine
+                                recordTemp(i).Add(c(i))
+                            Else
+                                TitleLabel.Text &= "Case Is " & selectOp(i) & c(i) & vbNewLine
+                                recordTemp(i).Add(c(i))
+                            End If
+                        End If
+                        TitleLabel.Text &= "　　x" & op(i) & "=" & d(i) & vbNewLine
+                    Next
+                    Dim ans As Integer = tempStr.Length
+                    For i = 1 To recordTemp.Count - 1
+                        Select Case recordTemp(i)(0)
+                            Case 1
+                                If ans >= Math.Min(Val(recordTemp(i)(1)), Val(recordTemp(i)(2))) And ans <= Math.Max(Val(recordTemp(i)(1)), Val(recordTemp(i)(2))) Then
+                                    Select Case op(i)
+                                        Case "+"
+                                            temp += d(i)
+                                        Case "-"
+                                            temp -= d(i)
+                                        Case "*"
+                                            temp *= d(i)
+                                        Case "/"
+                                            temp /= d(i)
+                                        Case "%"
+                                            temp = temp Mod d(i)
+                                    End Select
+                                    Exit For
+                                End If
+                            Case 2
+                                If ans = Val(recordTemp(i)(1)) Then
+                                    Select Case op(i)
+                                        Case "+"
+                                            temp += d(i)
+                                        Case "-"
+                                            temp -= d(i)
+                                        Case "*"
+                                            temp *= d(i)
+                                        Case "/"
+                                            temp /= d(i)
+                                        Case "%"
+                                            temp = temp Mod d(i)
+                                    End Select
+                                    Exit For
+                                End If
+                            Case 3
+                                Select Case selectOp(i)
+                                    Case ">"
+                                        If Not ans > recordTemp(i)(1) Then Continue For
+                                    Case ">="
+                                        If Not ans >= recordTemp(i)(1) Then Continue For
+                                    Case "="
+                                        If Not ans = recordTemp(i)(1) Then Continue For
+                                    Case "<"
+                                        If Not ans < recordTemp(i)(1) Then Continue For
+                                    Case "<="
+                                        If Not ans <= recordTemp(i)(1) Then Continue For
+                                End Select
+                                Select Case op(i)
+                                    Case "+"
+                                        temp += d(i)
+                                    Case "-"
+                                        temp -= d(i)
+                                    Case "*"
+                                        temp *= d(i)
+                                    Case "/"
+                                        temp /= d(i)
+                                    Case "%"
+                                        temp = temp Mod d(i)
+                                End Select
+                                Exit For
+                            Case 4
+                                Select Case op(i)
+                                    Case "+"
+                                        temp += d(i)
+                                    Case "-"
+                                        temp -= d(i)
+                                    Case "*"
+                                        temp *= d(i)
+                                    Case "/"
+                                        temp /= d(i)
+                                    Case "%"
+                                        temp = temp Mod d(i)
+                                End Select
+                                Exit For
+                        End Select
+                    Next
+                Case 2
+                    If strType = 0 Then Caseto() : Return
+                    TitleLabel.Text &= "select case Asc(str)" & vbNewLine
+                    tempRand = Int(Rnd() * 2 + 2)
+                    Dim ans As Integer = Asc(tempStr)
+                    For i = 1 To tempRand
+                        recordTemp.Add({Int(Rnd() * 3 + 1).ToString}.ToList)
+                        If i = tempRand And Int(Rnd() * 2) = 0 Then
+                            recordTemp(i)(0) = 4
+                            TitleLabel.Text &= "Case Else" & vbNewLine
+                        Else
+                            If recordTemp(i)(0) = 1 Then
+                                TitleLabel.Text &= "Case " & ans + c(i) & " To " & ans + d(i) & vbNewLine
+                                recordTemp(i).Add(ans + c(i))
+                                recordTemp(i).Add(ans + d(i))
+                            ElseIf recordTemp(i)(0) = 2 Then
+                                TitleLabel.Text &= "Case " & ans + c(i) & vbNewLine
+                                recordTemp(i).Add(ans + c(i))
+                            Else
+                                TitleLabel.Text &= "Case Is " & selectOp(i) & ans + c(i) & vbNewLine
+                                recordTemp(i).Add(ans + c(i))
+                            End If
+                        End If
+                        TitleLabel.Text &= "　　x" & op(i) & "=" & d(i) & vbNewLine
+                    Next
+                    For i = 1 To recordTemp.Count - 1
+                        Select Case recordTemp(i)(0)
+                            Case 1
+                                If ans >= Math.Min(Val(recordTemp(i)(1)), Val(recordTemp(i)(2))) And ans <= Math.Max(Val(recordTemp(i)(1)), Val(recordTemp(i)(2))) Then
+                                    Select Case op(i)
+                                        Case "+"
+                                            temp += d(i)
+                                        Case "-"
+                                            temp -= d(i)
+                                        Case "*"
+                                            temp *= d(i)
+                                        Case "/"
+                                            temp /= d(i)
+                                        Case "%"
+                                            temp = temp Mod d(i)
+                                    End Select
+                                    Exit For
+                                End If
+                            Case 2
+                                If ans = Val(recordTemp(i)(1)) Then
+                                    Select Case op(i)
+                                        Case "+"
+                                            temp += d(i)
+                                        Case "-"
+                                            temp -= d(i)
+                                        Case "*"
+                                            temp *= d(i)
+                                        Case "/"
+                                            temp /= d(i)
+                                        Case "%"
+                                            temp = temp Mod d(i)
+                                    End Select
+                                    Exit For
+                                End If
+                            Case 3
+                                Select Case selectOp(i)
+                                    Case ">"
+                                        If Not ans > recordTemp(i)(1) Then Continue For
+                                    Case ">="
+                                        If Not ans >= recordTemp(i)(1) Then Continue For
+                                    Case "="
+                                        If Not ans = recordTemp(i)(1) Then Continue For
+                                    Case "<"
+                                        If Not ans < recordTemp(i)(1) Then Continue For
+                                    Case "<="
+                                        If Not ans <= recordTemp(i)(1) Then Continue For
+                                End Select
+                                Select Case op(i)
+                                    Case "+"
+                                        temp += d(i)
+                                    Case "-"
+                                        temp -= d(i)
+                                    Case "*"
+                                        temp *= d(i)
+                                    Case "/"
+                                        temp /= d(i)
+                                    Case "%"
+                                        temp = temp Mod d(i)
+                                End Select
+                                Exit For
+                            Case 4
+                                Select Case op(i)
+                                    Case "+"
+                                        temp += d(i)
+                                    Case "-"
+                                        temp -= d(i)
+                                    Case "*"
+                                        temp *= d(i)
+                                    Case "/"
+                                        temp /= d(i)
+                                    Case "%"
+                                        temp = temp Mod d(i)
+                                End Select
+                                Exit For
+                        End Select
+                    Next
+                Case 3
+                    TitleLabel.Text &= "select case str" & vbNewLine
+                    Dim tempList As New List(Of String)
+                    tempList.Add("")
+                    tempRand = Int(Rnd() * 2 + 2)
+                    For i = 1 To tempRand
+                        Dim dStr As String = ""
+                        For j = 1 To tempStr.Length
+                            dStr &= Mid(selectStr(strType), Int(Rnd() * selectStr(strType).Length + 1), 1)
+                        Next
+                        tempList.Add(dStr)
+                        recordTemp.Add({Int(Rnd() * 3 + 1).ToString}.ToList)
+                        If i = tempRand And Int(Rnd() * 2) = 0 Then
+                            recordTemp(i)(0) = 4
+                            TitleLabel.Text &= "Case Else" & vbNewLine
+                        Else
+                            If recordTemp(i)(0) = 2 Then
+                                TitleLabel.Text &= "Case " & Chr(34) & dStr & Chr(34) & vbNewLine
+                                recordTemp(i).Add(dStr)
+                            Else
+                                TitleLabel.Text &= "Case Is " & selectOp(i) & Chr(34) & dStr & Chr(34) & vbNewLine
+                                recordTemp(i).Add(dStr)
+                            End If
+                        End If
+                        TitleLabel.Text &= "　　x" & op(i) & "=" & d(i) & vbNewLine
+                    Next
+                    For i = 1 To recordTemp.Count - 1
+                        Select Case recordTemp(i)(0)
+                            Case 2
+                                If tempStr = tempList(i) Then
+                                    Select Case op(i)
+                                        Case "+"
+                                            temp += d(i)
+                                        Case "-"
+                                            temp -= d(i)
+                                        Case "*"
+                                            temp *= d(i)
+                                        Case "/"
+                                            temp /= d(i)
+                                        Case "%"
+                                            temp = temp Mod d(i)
+                                    End Select
+                                    Exit For
+                                End If
+                            Case 3
+                                Select Case selectOp(i)
+                                    Case ">"
+                                        If Not ans > tempList(i) Then Continue For
+                                    Case ">="
+                                        If Not ans >= tempList(i) Then Continue For
+                                    Case "="
+                                        If Not ans = tempList(i) Then Continue For
+                                    Case "<"
+                                        If Not ans < tempList(i) Then Continue For
+                                    Case "<="
+                                        If Not ans <= tempList(i) Then Continue For
+                                End Select
+                                Select Case op(i)
+                                    Case "+"
+                                        temp += d(i)
+                                    Case "-"
+                                        temp -= d(i)
+                                    Case "*"
+                                        temp *= d(i)
+                                    Case "/"
+                                        temp /= d(i)
+                                    Case "%"
+                                        temp = temp Mod d(i)
+                                End Select
+                                Exit For
+                            Case 4
+                                Select Case op(i)
+                                    Case "+"
+                                        temp += d(i)
+                                    Case "-"
+                                        temp -= d(i)
+                                    Case "*"
+                                        temp *= d(i)
+                                    Case "/"
+                                        temp /= d(i)
+                                    Case "%"
+                                        temp = temp Mod d(i)
+                                End Select
+                                Exit For
+                        End Select
+                    Next
+            End Select
+
+            TitleLabel.Text &= "End select" & vbNewLine
+            TitleLabel.Text &= vbNewLine & "x=?"
+            AnsList.Add(temp)
+        Catch ex As Exception
+            Caseto() : Return
+        End Try
+        If AnsList.Count = 0 Then caseFor_If() : Return
+        ans = AnsList.Last
+        While AnsList.Distinct.ToList.Count < 4
+            Dim rand As Integer = Rnd() * 10 - 5
+            Dim index As Integer = Int(Rnd() * AnsList.Count)
+            AnsList.Add(AnsList(index) + rand)
+        End While
+        buttonToAns()
+    End Sub
+#End Region
     Sub buttonToAns()
         Dim randNum As List(Of Integer) = {1, 2, 3, 4}.ToList
         Dim num As Integer = 0
@@ -341,24 +890,22 @@ pro:
         End While
     End Sub
     Sub Caseto()
-        Dim rand As Integer = Int(Rnd() * 6 + 1)
+        Dim rand As Integer = Int(Rnd() * 10 + 1)
+        rand = 10
         Array.Clear(topicTypeRecord, 0, topicTypeRecord.Count)
         topicTypeRecord(rand) = True
         Select Case rand
-            Case 1
-                caseFor1()
-            Case 2
-                caseFor2()
-            Case 3
-                caseFor3()
-            Case 4
-                caseFor_If()
-            Case 5
-                caseFor_If_Else()
-            Case 6
-                caseIf()
-            Case Else
-                Caseto() : Return
+            Case 1 : caseFor1()
+            Case 2 : caseFor2()
+            Case 3 : caseFor3()
+            Case 4 : caseFor_If()
+            Case 5 : caseFor_If_Else()
+            Case 6 : caseIf()
+            Case 7 : caseIf_Else()
+            Case 8 : caseIf_ElseIf()
+            Case 9 : caseIf_If_Else()
+            Case 10 : caseSelect()
+            Case Else : Caseto() : Return
         End Select
     End Sub
     Private Sub chooseButton1_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles chooseButton1.Click
@@ -385,7 +932,6 @@ pro:
         type(Array.IndexOf(topicTypeRecord, True)) += 1
         Caseto()
     End Sub
-
     Private Sub chooseButton3_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles chooseButton3.Click
         If bool(3) = True Then
             MsgBox("正確")
@@ -398,7 +944,6 @@ pro:
         type(Array.IndexOf(topicTypeRecord, True)) += 1
         Caseto()
     End Sub
-
     Private Sub chooseButton4_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles chooseButton4.Click
         If bool(4) = True Then
             MsgBox("正確")
@@ -411,7 +956,6 @@ pro:
         type(Array.IndexOf(topicTypeRecord, True)) += 1
         Caseto()
     End Sub
-
     Private Sub moreMsgButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles moreMsgButton.Click
         Dim temp As String = ""
         For i = 1 To UBound(typeTitle)
