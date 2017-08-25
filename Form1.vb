@@ -1,10 +1,10 @@
 ﻿Public Class form1
-    Dim n(5), a(5), b(5), c(5), d(5), ans As Integer
-    Dim ifop(6) As String
+    Dim n(5), a(5), b(5), c(5), d(5) As Integer
+    Dim ifop(6), ans As String
     Dim AnsList As New List(Of Integer)
     Dim op(5), selectStr(5), selectOp(5) As String
     Dim typeTitle() As String = {"", "單層迴圈", "雙層迴圈", "三層迴圈", "迴圈+if", "迴圈+if...else", "if", "if...else", "if...elseif",
-                                 "if if...else", "select"}
+                                 "if if...else", "select", "while", "while+if", "while+ifElse"}
     Dim bool(4), topicTypeRecord(26) As Boolean
     Dim record(2), type(26), errorRecord(26) As Integer
     Private Sub Form1_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
@@ -48,6 +48,7 @@
         ifop(4) = Choose(Int(Rnd() * 2 + 1), "x", "i")
         ifop(5) = Choose(Int(Rnd() * 5 + 1), ">", ">=", "=", "<=", "<")
         ifop(6) = Choose(Int(Rnd() * 4 + 1), If(ifop(4) = "x", "i", "x"), c(2), b(2), n(2))
+        ans = ""
         chooseButton1.Enabled = False
         chooseButton2.Enabled = False
         chooseButton3.Enabled = False
@@ -842,56 +843,419 @@ addList:
         buttonToAns()
     End Sub
 #End Region
+#Region "while"
+    Sub caseWhileA()
+        init()
+        TitleLabel.Text &= "x=" & n(1) & " :i=" & n(2) & vbNewLine
+        TitleLabel.Text &= "while " & ifop(1) & ifop(2) & ifop(3) & vbNewLine
+        TitleLabel.Text &= "　　x" & op(1) & "=" & d(1) & vbNewLine
+        TitleLabel.Text &= "　　i" & op(2) & "=" & d(2) & vbNewLine
+        TitleLabel.Text &= "End While" & vbNewLine & vbNewLine & "x=?"
+        Dim temp As Integer = n(1)
+        Dim y As Integer = n(2)
+        Dim count As Integer = 0
+        Try
+            Select Case ifop(2)
+                Case ">"
+                    While If(ifop(1) = "i", y, If(ifop(1) = "x", temp, ifop(1))) > If(ifop(3) = "i", y, If(ifop(3) = "x", temp, ifop(3)))
+                        whileProcess(temp, 1)
+                        whileProcess(y, 2)
+                        count += 1
+                        If count >= 100 Then
+                            ans = "無窮迴圈" : Exit While
+                        End If
+                    End While
+                Case ">="
+                    While If(ifop(1) = "i", y, If(ifop(1) = "x", temp, ifop(1))) >= If(ifop(3) = "i", y, If(ifop(3) = "x", temp, ifop(3)))
+                        whileProcess(temp, 1)
+                        whileProcess(y, 2)
+                        count += 1
+                        If count >= 100 Then
+                            ans = "無窮迴圈" : Exit While
+                        End If
+                    End While
+                Case "="
+                    While If(ifop(1) = "i", y, If(ifop(1) = "x", temp, ifop(1))) = If(ifop(3) = "i", y, If(ifop(3) = "x", temp, ifop(3)))
+                        whileProcess(temp, 1)
+                        whileProcess(y, 2)
+                        count += 1
+                        If count >= 100 Then
+                            ans = "無窮迴圈" : Exit While
+                        End If
+                    End While
+                Case "<"
+                    While If(ifop(1) = "i", y, If(ifop(1) = "x", temp, ifop(1))) < If(ifop(3) = "i", y, If(ifop(3) = "x", temp, ifop(3)))
+                        whileProcess(temp, 1)
+                        whileProcess(y, 2)
+                        count += 1
+                        If count >= 100 Then
+                            ans = "無窮迴圈" : Exit While
+                        End If
+                    End While
+                Case "<="
+                    While If(ifop(1) = "i", y, If(ifop(1) = "x", temp, ifop(1))) <= If(ifop(3) = "i", y, If(ifop(3) = "x", temp, ifop(3)))
+                        whileProcess(temp, 1)
+                        whileProcess(y, 2)
+                        count += 1
+                        If count >= 100 Then
+                            ans = "無窮迴圈" : Exit While
+                        End If
+                    End While
+            End Select
+        Catch ex As Exception
+            Caseto() : Return
+        End Try
+        If AnsList.Count = 0 Then caseWhileA() : Return
+        If ans <> "無窮迴圈" Then ans = AnsList.Last
+        While AnsList.Distinct.ToList.Count < 4
+            Dim rand As Integer = Rnd() * 10 - 5
+            Dim index As Integer = Int(Rnd() * AnsList.Count)
+            AnsList.Add(AnsList(index) + rand)
+        End While
+        buttonToAns()
+    End Sub
+    Sub caseWhileIf()
+        init()
+        TitleLabel.Text &= "x=" & n(1) & " :i=" & n(2) & vbNewLine
+        TitleLabel.Text &= "while " & ifop(1) & ifop(2) & ifop(3) & vbNewLine
+        TitleLabel.Text &= "　　x" & op(1) & "=" & d(1) & vbNewLine
+        TitleLabel.Text &= "　　i" & op(2) & "=" & d(2) & vbNewLine
+        TitleLabel.Text &= "　　if " & ifop(4) & ifop(5) & ifop(6) & vbNewLine
+        TitleLabel.Text &= "　　　　x" & op(3) & "=" & d(3) & vbNewLine
+        TitleLabel.Text &= "　　End if" & vbNewLine
+        TitleLabel.Text &= "End While" & vbNewLine & vbNewLine & "x=?"
+        Dim temp As Integer = n(1)
+        Dim y As Integer = n(2)
+        Dim count As Integer = 0
+        Try
+            Select Case ifop(2)
+                Case ">"
+                    While If(ifop(1) = "i", y, If(ifop(1) = "x", temp, ifop(1))) > If(ifop(3) = "i", y, If(ifop(3) = "x", temp, ifop(3)))
+                        whileProcess(temp, 1)
+                        whileProcess(y, 2)
+                        Select Case ifop(5)
+                            Case ">"
+                                If If(ifop(4) = "x", temp, y) > If(ifop(6) = "x", temp, If(ifop(6) = "i", y, ifop(6))) Then whileProcess(temp, 3)
+                            Case ">="
+                                If If(ifop(4) = "x", temp, y) >= If(ifop(6) = "x", temp, If(ifop(6) = "i", y, ifop(6))) Then whileProcess(temp, 3)
+                            Case "="
+                                If If(ifop(4) = "x", temp, y) = If(ifop(6) = "x", temp, If(ifop(6) = "i", y, ifop(6))) Then whileProcess(temp, 3)
+                            Case "<"
+                                If If(ifop(4) = "x", temp, y) < If(ifop(6) = "x", temp, If(ifop(6) = "i", y, ifop(6))) Then whileProcess(temp, 3)
+                            Case "<="
+                                If If(ifop(4) = "x", temp, y) <= If(ifop(6) = "x", temp, If(ifop(6) = "i", y, ifop(6))) Then whileProcess(temp, 3)
+                        End Select
+                        count += 1
+                        If count >= 100 Then
+                            ans = "無窮迴圈" : Exit While
+                        End If
+                    End While
+                Case ">="
+                    While If(ifop(1) = "i", y, If(ifop(1) = "x", temp, ifop(1))) >= If(ifop(3) = "i", y, If(ifop(3) = "x", temp, ifop(3)))
+                        whileProcess(temp, 1)
+                        whileProcess(y, 2)
+                        Select Case ifop(5)
+                            Case ">"
+                                If If(ifop(4) = "x", temp, y) > If(ifop(6) = "x", temp, If(ifop(6) = "i", y, ifop(6))) Then whileProcess(temp, 3)
+                            Case ">="
+                                If If(ifop(4) = "x", temp, y) >= If(ifop(6) = "x", temp, If(ifop(6) = "i", y, ifop(6))) Then whileProcess(temp, 3)
+                            Case "="
+                                If If(ifop(4) = "x", temp, y) = If(ifop(6) = "x", temp, If(ifop(6) = "i", y, ifop(6))) Then whileProcess(temp, 3)
+                            Case "<"
+                                If If(ifop(4) = "x", temp, y) < If(ifop(6) = "x", temp, If(ifop(6) = "i", y, ifop(6))) Then whileProcess(temp, 3)
+                            Case "<="
+                                If If(ifop(4) = "x", temp, y) <= If(ifop(6) = "x", temp, If(ifop(6) = "i", y, ifop(6))) Then whileProcess(temp, 3)
+                        End Select
+                        count += 1
+                        If count >= 100 Then
+                            ans = "無窮迴圈" : Exit While
+                        End If
+                    End While
+                Case "="
+                    While If(ifop(1) = "i", y, If(ifop(1) = "x", temp, ifop(1))) = If(ifop(3) = "i", y, If(ifop(3) = "x", temp, ifop(3)))
+                        whileProcess(temp, 1)
+                        whileProcess(y, 2)
+                        Select Case ifop(5)
+                            Case ">"
+                                If If(ifop(4) = "x", temp, y) > If(ifop(6) = "x", temp, If(ifop(6) = "i", y, ifop(6))) Then whileProcess(temp, 3)
+                            Case ">="
+                                If If(ifop(4) = "x", temp, y) >= If(ifop(6) = "x", temp, If(ifop(6) = "i", y, ifop(6))) Then whileProcess(temp, 3)
+                            Case "="
+                                If If(ifop(4) = "x", temp, y) = If(ifop(6) = "x", temp, If(ifop(6) = "i", y, ifop(6))) Then whileProcess(temp, 3)
+                            Case "<"
+                                If If(ifop(4) = "x", temp, y) < If(ifop(6) = "x", temp, If(ifop(6) = "i", y, ifop(6))) Then whileProcess(temp, 3)
+                            Case "<="
+                                If If(ifop(4) = "x", temp, y) <= If(ifop(6) = "x", temp, If(ifop(6) = "i", y, ifop(6))) Then whileProcess(temp, 3)
+                        End Select
+                        count += 1
+                        If count >= 100 Then
+                            ans = "無窮迴圈" : Exit While
+                        End If
+                    End While
+                Case "<"
+                    While If(ifop(1) = "i", y, If(ifop(1) = "x", temp, ifop(1))) < If(ifop(3) = "i", y, If(ifop(3) = "x", temp, ifop(3)))
+                        whileProcess(temp, 1)
+                        whileProcess(y, 2)
+                        Select Case ifop(5)
+                            Case ">"
+                                If If(ifop(4) = "x", temp, y) > If(ifop(6) = "x", temp, If(ifop(6) = "i", y, ifop(6))) Then whileProcess(temp, 3)
+                            Case ">="
+                                If If(ifop(4) = "x", temp, y) >= If(ifop(6) = "x", temp, If(ifop(6) = "i", y, ifop(6))) Then whileProcess(temp, 3)
+                            Case "="
+                                If If(ifop(4) = "x", temp, y) = If(ifop(6) = "x", temp, If(ifop(6) = "i", y, ifop(6))) Then whileProcess(temp, 3)
+                            Case "<"
+                                If If(ifop(4) = "x", temp, y) < If(ifop(6) = "x", temp, If(ifop(6) = "i", y, ifop(6))) Then whileProcess(temp, 3)
+                            Case "<="
+                                If If(ifop(4) = "x", temp, y) <= If(ifop(6) = "x", temp, If(ifop(6) = "i", y, ifop(6))) Then whileProcess(temp, 3)
+                        End Select
+                        count += 1
+                        If count >= 100 Then
+                            ans = "無窮迴圈" : Exit While
+                        End If
+                    End While
+                Case "<="
+                    While If(ifop(1) = "i", y, If(ifop(1) = "x", temp, ifop(1))) <= If(ifop(3) = "i", y, If(ifop(3) = "x", temp, ifop(3)))
+                        whileProcess(temp, 1)
+                        whileProcess(y, 2)
+                        Select Case ifop(5)
+                            Case ">"
+                                If If(ifop(4) = "x", temp, y) > If(ifop(6) = "x", temp, If(ifop(6) = "i", y, ifop(6))) Then whileProcess(temp, 3)
+                            Case ">="
+                                If If(ifop(4) = "x", temp, y) >= If(ifop(6) = "x", temp, If(ifop(6) = "i", y, ifop(6))) Then whileProcess(temp, 3)
+                            Case "="
+                                If If(ifop(4) = "x", temp, y) = If(ifop(6) = "x", temp, If(ifop(6) = "i", y, ifop(6))) Then whileProcess(temp, 3)
+                            Case "<"
+                                If If(ifop(4) = "x", temp, y) < If(ifop(6) = "x", temp, If(ifop(6) = "i", y, ifop(6))) Then whileProcess(temp, 3)
+                            Case "<="
+                                If If(ifop(4) = "x", temp, y) <= If(ifop(6) = "x", temp, If(ifop(6) = "i", y, ifop(6))) Then whileProcess(temp, 3)
+                        End Select
+                        count += 1
+                        If count >= 100 Then
+                            ans = "無窮迴圈" : Exit While
+                        End If
+                    End While
+            End Select
+        Catch ex As Exception
+            Caseto() : Return
+        End Try
+        If AnsList.Count = 0 Then caseWhileIf() : Return
+        If ans <> "無窮迴圈" Then ans = AnsList.Last
+        While AnsList.Distinct.ToList.Count < 4
+            Dim rand As Integer = Rnd() * 10 - 5
+            Dim index As Integer = Int(Rnd() * AnsList.Count)
+            AnsList.Add(AnsList(index) + rand)
+        End While
+        buttonToAns()
+    End Sub
+    Sub caseWhileIfElse()
+        init()
+        Dim ifRand As Integer = Int(Rnd() * 2)
+        TitleLabel.Text &= "x=" & n(1) & " :i=" & n(2) & vbNewLine
+        TitleLabel.Text &= "while " & ifop(1) & ifop(2) & ifop(3) & vbNewLine
+        TitleLabel.Text &= "　　x" & op(1) & "=" & d(1) & vbNewLine
+        TitleLabel.Text &= "　　i" & op(2) & "=" & d(2) & vbNewLine
+        TitleLabel.Text &= "　　if " & ifop(4) & ifop(5) & ifop(6) & vbNewLine
+        TitleLabel.Text &= "　　　　" & If(ifRand = 0, "Exit While", "x" & op(4) & "=" & d(4)) & vbNewLine & "　　Else" & vbNewLine
+        TitleLabel.Text &= "　　　　x" & op(3) & "=" & d(3) & vbNewLine
+        TitleLabel.Text &= "　　End if" & vbNewLine
+        TitleLabel.Text &= "End While" & vbNewLine & "x=?"
+        Dim temp As Integer = n(1)
+        Dim y As Integer = n(2)
+        Dim count As Integer = 0
+        Try
+            Select Case ifop(2)
+                Case ">"
+                    While If(ifop(1) = "i", y, If(ifop(1) = "x", temp, ifop(1))) > If(ifop(3) = "i", y, If(ifop(3) = "x", temp, ifop(3)))
+                        whileProcess(temp, 1)
+                        whileProcess(y, 2)
+                        Select Case ifop(5)
+                            Case ">"
+                                If If(ifop(4) = "x", temp, y) > If(ifop(6) = "x", temp, If(ifop(6) = "i", y, ifop(6))) Then If ifRand = 0 Then Exit While Else whileProcess(temp, 4) Else whileProcess(temp, 3)
+                            Case ">="
+                                If If(ifop(4) = "x", temp, y) >= If(ifop(6) = "x", temp, If(ifop(6) = "i", y, ifop(6))) Then If ifRand = 0 Then Exit While Else whileProcess(temp, 4) Else whileProcess(temp, 3)
+                            Case "="
+                                If If(ifop(4) = "x", temp, y) = If(ifop(6) = "x", temp, If(ifop(6) = "i", y, ifop(6))) Then If ifRand = 0 Then Exit While Else whileProcess(temp, 4) Else whileProcess(temp, 3)
+                            Case "<"
+                                If If(ifop(4) = "x", temp, y) < If(ifop(6) = "x", temp, If(ifop(6) = "i", y, ifop(6))) Then If ifRand = 0 Then Exit While Else whileProcess(temp, 4) Else whileProcess(temp, 3)
+                            Case "<="
+                                If If(ifop(4) = "x", temp, y) <= If(ifop(6) = "x", temp, If(ifop(6) = "i", y, ifop(6))) Then If ifRand = 0 Then Exit While Else whileProcess(temp, 4) Else whileProcess(temp, 3)
+                        End Select
+                        count += 1
+                        If count >= 100 Then
+                            ans = "無窮迴圈" : Exit While
+                        End If
+                    End While
+                Case ">="
+                    While If(ifop(1) = "i", y, If(ifop(1) = "x", temp, ifop(1))) >= If(ifop(3) = "i", y, If(ifop(3) = "x", temp, ifop(3)))
+                        whileProcess(temp, 1)
+                        whileProcess(y, 2)
+                        Select Case ifop(5)
+                            Case ">"
+                                If If(ifop(4) = "x", temp, y) > If(ifop(6) = "x", temp, If(ifop(6) = "i", y, ifop(6))) Then If ifRand = 0 Then Exit While Else whileProcess(temp, 4) Else whileProcess(temp, 3)
+                            Case ">="
+                                If If(ifop(4) = "x", temp, y) >= If(ifop(6) = "x", temp, If(ifop(6) = "i", y, ifop(6))) Then If ifRand = 0 Then Exit While Else whileProcess(temp, 4) Else whileProcess(temp, 3)
+                            Case "="
+                                If If(ifop(4) = "x", temp, y) = If(ifop(6) = "x", temp, If(ifop(6) = "i", y, ifop(6))) Then If ifRand = 0 Then Exit While Else whileProcess(temp, 4) Else whileProcess(temp, 3)
+                            Case "<"
+                                If If(ifop(4) = "x", temp, y) < If(ifop(6) = "x", temp, If(ifop(6) = "i", y, ifop(6))) Then If ifRand = 0 Then Exit While Else whileProcess(temp, 4) Else whileProcess(temp, 3)
+                            Case "<="
+                                If If(ifop(4) = "x", temp, y) <= If(ifop(6) = "x", temp, If(ifop(6) = "i", y, ifop(6))) Then If ifRand = 0 Then Exit While Else whileProcess(temp, 4) Else whileProcess(temp, 3)
+                        End Select
+                        count += 1
+                        If count >= 100 Then
+                            ans = "無窮迴圈" : Exit While
+                        End If
+                    End While
+                Case "="
+                    While If(ifop(1) = "i", y, If(ifop(1) = "x", temp, ifop(1))) = If(ifop(3) = "i", y, If(ifop(3) = "x", temp, ifop(3)))
+                        whileProcess(temp, 1)
+                        whileProcess(y, 2)
+                        Select Case ifop(5)
+                            Case ">"
+                                If If(ifop(4) = "x", temp, y) > If(ifop(6) = "x", temp, If(ifop(6) = "i", y, ifop(6))) Then If ifRand = 0 Then Exit While Else whileProcess(temp, 4) Else whileProcess(temp, 3)
+                            Case ">="
+                                If If(ifop(4) = "x", temp, y) >= If(ifop(6) = "x", temp, If(ifop(6) = "i", y, ifop(6))) Then If ifRand = 0 Then Exit While Else whileProcess(temp, 4) Else whileProcess(temp, 3)
+                            Case "="
+                                If If(ifop(4) = "x", temp, y) = If(ifop(6) = "x", temp, If(ifop(6) = "i", y, ifop(6))) Then If ifRand = 0 Then Exit While Else whileProcess(temp, 4) Else whileProcess(temp, 3)
+                            Case "<"
+                                If If(ifop(4) = "x", temp, y) < If(ifop(6) = "x", temp, If(ifop(6) = "i", y, ifop(6))) Then If ifRand = 0 Then Exit While Else whileProcess(temp, 4) Else whileProcess(temp, 3)
+                            Case "<="
+                                If If(ifop(4) = "x", temp, y) <= If(ifop(6) = "x", temp, If(ifop(6) = "i", y, ifop(6))) Then If ifRand = 0 Then Exit While Else whileProcess(temp, 4) Else whileProcess(temp, 3)
+                        End Select
+                        count += 1
+                        If count >= 100 Then
+                            ans = "無窮迴圈" : Exit While
+                        End If
+                    End While
+                Case "<"
+                    While If(ifop(1) = "i", y, If(ifop(1) = "x", temp, ifop(1))) < If(ifop(3) = "i", y, If(ifop(3) = "x", temp, ifop(3)))
+                        whileProcess(temp, 1)
+                        whileProcess(y, 2)
+                        Select Case ifop(5)
+                            Case ">"
+                                If If(ifop(4) = "x", temp, y) > If(ifop(6) = "x", temp, If(ifop(6) = "i", y, ifop(6))) Then If ifRand = 0 Then Exit While Else whileProcess(temp, 4) Else whileProcess(temp, 3)
+                            Case ">="
+                                If If(ifop(4) = "x", temp, y) >= If(ifop(6) = "x", temp, If(ifop(6) = "i", y, ifop(6))) Then If ifRand = 0 Then Exit While Else whileProcess(temp, 4) Else whileProcess(temp, 3)
+                            Case "="
+                                If If(ifop(4) = "x", temp, y) = If(ifop(6) = "x", temp, If(ifop(6) = "i", y, ifop(6))) Then If ifRand = 0 Then Exit While Else whileProcess(temp, 4) Else whileProcess(temp, 3)
+                            Case "<"
+                                If If(ifop(4) = "x", temp, y) < If(ifop(6) = "x", temp, If(ifop(6) = "i", y, ifop(6))) Then If ifRand = 0 Then Exit While Else whileProcess(temp, 4) Else whileProcess(temp, 3)
+                            Case "<="
+                                If If(ifop(4) = "x", temp, y) <= If(ifop(6) = "x", temp, If(ifop(6) = "i", y, ifop(6))) Then If ifRand = 0 Then Exit While Else whileProcess(temp, 4) Else whileProcess(temp, 3)
+                        End Select
+                        count += 1
+                        If count >= 100 Then
+                            ans = "無窮迴圈" : Exit While
+                        End If
+                    End While
+                Case "<="
+                    While If(ifop(1) = "i", y, If(ifop(1) = "x", temp, ifop(1))) <= If(ifop(3) = "i", y, If(ifop(3) = "x", temp, ifop(3)))
+                        whileProcess(temp, 1)
+                        whileProcess(y, 2)
+                        Select Case ifop(5)
+                            Case ">"
+                                If If(ifop(4) = "x", temp, y) > If(ifop(6) = "x", temp, If(ifop(6) = "i", y, ifop(6))) Then If ifRand = 0 Then Exit While Else whileProcess(temp, 4) Else whileProcess(temp, 3)
+                            Case ">="
+                                If If(ifop(4) = "x", temp, y) >= If(ifop(6) = "x", temp, If(ifop(6) = "i", y, ifop(6))) Then If ifRand = 0 Then Exit While Else whileProcess(temp, 4) Else whileProcess(temp, 3)
+                            Case "="
+                                If If(ifop(4) = "x", temp, y) = If(ifop(6) = "x", temp, If(ifop(6) = "i", y, ifop(6))) Then If ifRand = 0 Then Exit While Else whileProcess(temp, 4) Else whileProcess(temp, 3)
+                            Case "<"
+                                If If(ifop(4) = "x", temp, y) < If(ifop(6) = "x", temp, If(ifop(6) = "i", y, ifop(6))) Then If ifRand = 0 Then Exit While Else whileProcess(temp, 4) Else whileProcess(temp, 3)
+                            Case "<="
+                                If If(ifop(4) = "x", temp, y) <= If(ifop(6) = "x", temp, If(ifop(6) = "i", y, ifop(6))) Then If ifRand = 0 Then Exit While Else whileProcess(temp, 4) Else whileProcess(temp, 3)
+                        End Select
+                        count += 1
+                        If count >= 100 Then
+                            ans = "無窮迴圈" : Exit While
+                        End If
+                    End While
+            End Select
+        Catch ex As Exception
+            Caseto() : Return
+        End Try
+        If AnsList.Count = 0 Then caseWhileIf() : Return
+        If ans <> "無窮迴圈" Then ans = AnsList.Last
+        While AnsList.Distinct.ToList.Count < 4
+            Dim rand As Integer = Rnd() * 10 - 5
+            Dim index As Integer = Int(Rnd() * AnsList.Count)
+            AnsList.Add(AnsList(index) + rand)
+        End While
+        buttonToAns()
+    End Sub
+    Sub whileProcess(ByRef temp As Integer, ByVal i As Integer)
+        Select Case op(i)
+            Case "+"
+                temp += d(i)
+            Case "-"
+                temp -= d(i)
+            Case "*"
+                temp *= d(i)
+            Case "/"
+                temp /= d(i)
+            Case "%"
+                temp = temp Mod d(i)
+        End Select
+        If i = 1 Or i = 3 Then AnsList.Add(temp)
+    End Sub
+#End Region
     Sub buttonToAns()
         Dim randNum As List(Of Integer) = {1, 2, 3, 4}.ToList
         Dim num As Integer = 0
         AnsList = AnsList.Distinct.ToList
         If AnsList.Count < 4 Then Caseto() : Return
         Dim ansNum As Integer = AnsList.Count
+        Dim overflowBool As Byte = 0
         While num < 4
             If num >= ansNum Then Exit While
             Dim index As Integer = Int(Rnd() * AnsList.Count)
             Dim rand As Integer = Int(Rnd() * randNum.Count)
-            If num = 0 Then index = AnsList.IndexOf(ans) : index = If(index = -1, AnsList.Count - 1, index) : bool(randNum(rand)) = True
+            If overflowBool = 0 And num > 1 Then
+                If Int(Rnd() * 4) = 0 Then
+                    overflowBool = 1
+                End If
+            End If
+            If ans = "" Then ans = AnsList.Last
+            If num = 0 Then index = AnsList.IndexOf(Val(ans)) : index = If(index = -1, AnsList.Count - 1, index) : bool(randNum(rand)) = True
             Select Case randNum(rand)
                 Case 1
                     If chooseButton1.Text = "" Then
-                        chooseButton1.Text = AnsList(index)
-                        num += 1
+                        chooseButton1.Text = If((ans = "無窮迴圈" And overflowBool <= 1) Or overflowBool = 1, "無窮迴圈", AnsList(index))
+                        num += 1 : overflowBool = 2
                         chooseButton1.Enabled = True
                         AnsList.RemoveAt(index)
                         randNum.RemoveAt(rand)
                     End If
                 Case 2
                     If chooseButton2.Text = "" Then
-                        chooseButton2.Text = AnsList(index)
-                        num += 1
+                        chooseButton2.Text = If((ans = "無窮迴圈" And overflowBool <= 1) Or overflowBool = 1, "無窮迴圈", AnsList(index))
+                        num += 1 : overflowBool = 2
                         chooseButton2.Enabled = True
                         AnsList.RemoveAt(index)
                         randNum.RemoveAt(rand)
                     End If
                 Case 3
                     If chooseButton3.Text = "" Then
-                        chooseButton3.Text = AnsList(index)
-                        num += 1
+                        chooseButton3.Text = If((ans = "無窮迴圈" And overflowBool <= 1) Or overflowBool = 1, "無窮迴圈", AnsList(index))
+                        num += 1 : overflowBool = 2
                         chooseButton3.Enabled = True
                         AnsList.RemoveAt(index)
                         randNum.RemoveAt(rand)
                     End If
                 Case 4
                     If chooseButton4.Text = "" Then
-                        chooseButton4.Text = AnsList(index)
-                        num += 1
+                        chooseButton4.Text = If((ans = "無窮迴圈" And overflowBool <= 1) Or overflowBool = 1, "無窮迴圈", AnsList(index))
+                        num += 1 : overflowBool = 2
                         chooseButton4.Enabled = True
                         AnsList.RemoveAt(index)
                         randNum.RemoveAt(rand)
                     End If
             End Select
+
         End While
     End Sub
     Sub Caseto()
-        Dim rand As Integer = Int(Rnd() * 10 + 1)
-        rand = 10
+        Dim rand As Integer = Int(Rnd() * 13 + 1)
+        'rand = 13
         Array.Clear(topicTypeRecord, 0, topicTypeRecord.Count)
         topicTypeRecord(rand) = True
         Select Case rand
@@ -905,6 +1269,9 @@ addList:
             Case 8 : caseIf_ElseIf()
             Case 9 : caseIf_If_Else()
             Case 10 : caseSelect()
+            Case 11 : caseWhileA()
+            Case 12 : caseWhileIf()
+            Case 13 : caseWhileIfElse()
             Case Else : Caseto() : Return
         End Select
     End Sub
