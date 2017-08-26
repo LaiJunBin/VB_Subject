@@ -1335,4 +1335,17 @@ addList:
     Private Sub skipButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles skipButton.Click
         Caseto()
     End Sub
+    Private Sub form1_FormClosing(ByVal sender As Object, ByVal e As System.Windows.Forms.FormClosingEventArgs) Handles Me.FormClosing
+        If MessageBox.Show("確定關閉視窗?", "警告", MessageBoxButtons.YesNo) = MsgBoxResult.No Then
+            e.Cancel = True
+        Else
+            If record.Sum > 0 Then
+                Dim URL As New Uri("網址")
+                Dim web As New System.Net.WebClient()
+                web.Headers.Add("Content-Type", "application/x-www-form-urlencoded")
+                Dim d As Byte() = System.Text.Encoding.ASCII.GetBytes("total=" & record.Sum & "&correct=" & record(1) & "&error=" & record(2))
+                Dim res As Byte() = web.UploadData(URL, "POST", d)
+            End If
+        End If
+    End Sub
 End Class
